@@ -42,6 +42,31 @@ document.addEventListener("DOMContentLoaded", () => {
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  // --- Highlight the nav link for the section being viewed ---
+  const navLinks = Array.from(document.querySelectorAll('.main-nav a[href^="#"]'));
+  const spyTargets = navLinks
+    .map((link) => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  if ("IntersectionObserver" in window && spyTargets.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach((link) => {
+            if (link.getAttribute("href") === "#" + entry.target.id) {
+              link.setAttribute("aria-current", "true");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    spyTargets.forEach((section) => spy.observe(section));
+  }
+
   // --- Savings calculator ---
   const priceInput = document.getElementById("retail-price");
   const buyTotal = document.getElementById("buy-total");
