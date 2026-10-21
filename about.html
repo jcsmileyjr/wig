@@ -33,7 +33,7 @@
       align-items: start;
     }
     .story-photo { position: sticky; top: 100px; }
-    .story-photo .shape { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); box-shadow: var(--shadow); }
+    .story-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow); }
     .story-photo figcaption { margin-top: 12px; font-size: 0.92rem; color: var(--muted); text-align: center; }
     .story-copy p { font-size: 1.12rem; color: var(--muted); }
     .story-copy p.lead { font-size: 1.3rem; color: var(--ink); }
@@ -177,10 +177,9 @@
     <!-- THE STORY -->
     <section class="section" id="story">
       <div class="container story-grid">
-        <!-- Replace with a real photo of you -->
         <figure class="story-photo reveal">
-          <div class="shape" role="img" aria-label="Placeholder for founder photo" data-label="Photo: founder"></div>
-          <figcaption>[Your name], dad, founder, and still on a budget</figcaption>
+          <img src="jcsmiley.jpg" alt="JC Smiley, founder">
+          <figcaption>JC Smiley, dad, founder, and still on a budget</figcaption>
         </figure>
 
         <div class="story-copy">
@@ -206,7 +205,7 @@
             So I built the thing I wished I'd had: a subscription that gives your girl fresh, quality hair
             on a schedule, at a price that doesn't hurt.
           </p>
-          <p class="signature">[Your name], Founder</p>
+          <p class="signature">JC Smiley, Founder</p>
         </div>
       </div>
     </section>
