@@ -459,3 +459,128 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .btn { transition: none; }
 }
+
+/* ==========================================================
+   Contact page
+   ========================================================== */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute; left: -9999px; top: 8px; z-index: 100;
+  background: var(--gold-500); color: var(--plum-900);
+  font-weight: 700; padding: 10px 16px; border-radius: 999px; text-decoration: none;
+}
+.skip-link:focus { left: 12px; }
+
+.page-hero {
+  padding: 44px 0 56px;
+  background:
+    radial-gradient(900px 400px at 85% -10%, rgba(201, 162, 75, 0.2), transparent 60%),
+    var(--cream);
+}
+.page-hero h1 { max-width: 16em; }
+.page-hero .subhead { margin-bottom: 18px; }
+
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; }
+.breadcrumb li + li::before { content: "\203A"; margin-right: 6px; color: var(--gold-600); }
+.breadcrumb a { color: var(--muted); }
+.breadcrumb [aria-current="page"] { color: var(--plum-900); font-weight: 600; }
+
+/* Contact method cards */
+.contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.contact-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 30px 26px;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+}
+.contact-icon {
+  display: grid; place-content: center;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--plum-800); margin-bottom: 10px;
+}
+.contact-icon .icon { width: 24px; height: 24px; fill: var(--gold-400); }
+.contact-card h3 { margin: 0; }
+.contact-value {
+  font-family: var(--font-head); font-size: 1.35rem; font-weight: 700;
+  color: var(--plum-900); text-decoration: none; overflow-wrap: anywhere; margin: 0;
+}
+a.contact-value:hover { text-decoration: underline; }
+.contact-note { color: var(--muted); font-size: 0.95rem; margin: 0; }
+.contact-actions { margin-top: auto; padding-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.copy-btn {
+  cursor: pointer; font: inherit; font-weight: 700; font-size: 0.9rem;
+  padding: 0.5em 1.1em; border-radius: 999px;
+  border: 2px solid var(--plum-700); background: transparent; color: var(--plum-700);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.copy-btn:hover { background: var(--plum-700); color: var(--white); }
+.copy-btn[hidden] { display: none; }
+
+/* Who + hours */
+.contact-split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+.who-card, .hours-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 34px 30px;
+  box-shadow: var(--shadow-sm);
+}
+.who-card { display: flex; gap: 22px; align-items: flex-start; }
+.who-card .shape-avatar { width: 96px; height: 96px; }
+.who-card h2, .hours-card h2 { font-size: 1.6rem; margin-bottom: 0.25em; }
+.who-sub { font-weight: 600; color: var(--plum-700); }
+.who-card p:last-child { color: var(--muted); margin-bottom: 0; }
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; margin: 6px 0 4px;
+  border-radius: 999px; font-weight: 700; font-size: 0.9rem;
+  background: var(--plum-100); color: var(--plum-800);
+}
+.status-badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--gold-600); }
+.status-badge[data-state="open"] { background: #e3f3ea; color: #1f6b46; }
+.status-badge[data-state="open"]::before { background: var(--success); }
+
+.hours-table { width: 100%; border-collapse: collapse; margin: 14px 0 12px; }
+.hours-table th, .hours-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.hours-table th { text-align: left; font-weight: 600; }
+.hours-table td { text-align: right; color: var(--muted); }
+.hours-table tr.is-today th, .hours-table tr.is-today td { background: var(--plum-100); color: var(--plum-900); font-weight: 700; }
+.hours-note { font-size: 0.88rem; color: var(--muted); margin: 0; }
+
+/* Quick answers */
+.help-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.help-card {
+  display: block; background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px 24px; text-decoration: none; color: var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.help-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.help-card strong { display: block; font-family: var(--font-head); font-size: 1.1rem; color: var(--plum-900); margin-bottom: 4px; }
+.help-card span { color: var(--muted); font-size: 0.95rem; }
+.help-card em { display: block; margin-top: 10px; font-style: normal; font-weight: 700; color: var(--plum-700); }
+
+/* Closing CTA with two buttons */
+.cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 10px; }
+.final-cta .cta-actions .btn { margin-top: 0; }
+.btn-outline-light { border-color: rgba(255, 255, 255, 0.65); color: var(--white); background: transparent; }
+.btn-outline-light:hover { background: var(--white); color: var(--plum-900); }
+
+@media (max-width: 880px) {
+  .contact-grid, .help-grid, .contact-split { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .page-hero { padding: 32px 0 44px; }
+  .who-card { flex-direction: column; }
+  .who-card, .hours-card { padding: 26px 22px; }
+  .cta-actions .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .help-card, .copy-btn { transition: none; }
+}

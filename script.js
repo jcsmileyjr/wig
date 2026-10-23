@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const PLAN_PRICE = 100;      // monthly subscription price
   const PIECES_PER_MONTH = 2;  // wigs or weaves included each month
 
+  // Business hours (used by the "open now" badge on the contact page)
+  const HOURS_TIMEZONE = "America/Chicago";            // Central Time
+  const BUSINESS_HOURS = { days: [1, 2, 3, 4, 5], open: 8, close: 17 }; // Mon-Fri, 8am-5pm
+
   // --- Mobile navigation ---
   const toggle = document.querySelector(".nav-toggle");
   const nav = document.getElementById("main-nav");
@@ -123,6 +127,104 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     revealItems.forEach((el) => el.classList.add("visible"));
   }
+
+  // --- Business hours badge and today's row (contact page) ---
+  const statusBadge = document.getElementById("hours-status");
+  if (statusBadge) {
+    const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const hourLabel = (h) => (h % 12 || 12) + ":00 " + (h < 12 ? "am" : "pm");
+
+    const getNow = () => {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: HOURS_TIMEZONE,
+        weekday: "long",
+        hour: "numeric",
+        minute: "numeric",
+        hourCycle: "h23",
+      }).formatToParts(new Date());
+      const get = (type) => parts.find((p) => p.type === type).value;
+      return {
+        day: DAY_NAMES.indexOf(get("weekday")),
+        minutes: parseInt(get("hour"), 10) * 60 + parseInt(get("minute"), 10),
+      };
+    };
+
+    const renderHours = () => {
+      let now;
+      try {
+        now = getNow();
+      } catch (err) {
+        return; // Older browser: keep the static text in the page
+      }
+
+      const isOpenDay = BUSINESS_HOURS.days.includes(now.day);
+      const isOpen =
+        isOpenDay &&
+        now.minutes >= BUSINESS_HOURS.open * 60 &&
+        now.minutes < BUSINESS_HOURS.close * 60;
+
+      let text;
+      if (isOpen) {
+        text = "We're open now, until " + hourLabel(BUSINESS_HOURS.close) + " CT";
+      } else {
+        let when = null;
+        if (isOpenDay && now.minutes < BUSINESS_HOURS.open * 60) {
+          when = "today";
+        } else {
+          for (let i = 1; i <= 7; i++) {
+            const d = (now.day + i) % 7;
+            if (BUSINESS_HOURS.days.includes(d)) {
+              when = i === 1 ? "tomorrow" : DAY_NAMES[d];
+              break;
+            }
+          }
+        }
+        text = "We're closed right now. We reopen " + when + " at " + hourLabel(BUSINESS_HOURS.open) + " CT";
+      }
+
+      statusBadge.setAttribute("data-state", isOpen ? "open" : "closed");
+      const textEl = statusBadge.querySelector(".status-text");
+      if (textEl) textEl.textContent = text;
+
+      document.querySelectorAll("[data-days]").forEach((row) => {
+        const days = row.getAttribute("data-days").split(",").map(Number);
+        row.classList.toggle("is-today", days.includes(now.day));
+      });
+    };
+
+    renderHours();
+    setInterval(renderHours, 60000);
+  }
+
+  // --- Copy-to-clipboard buttons (shown only when JavaScript runs) ---
+  document.querySelectorAll("[data-copy]").forEach((btn) => {
+    const original = btn.textContent;
+    btn.hidden = false;
+
+    btn.addEventListener("click", async () => {
+      const value = btn.getAttribute("data-copy");
+      let copied = false;
+
+      try {
+        await navigator.clipboard.writeText(value);
+        copied = true;
+      } catch (err) {
+        // Fallback for browsers or contexts without the clipboard API
+        const box = document.createElement("textarea");
+        box.value = value;
+        box.setAttribute("readonly", "");
+        box.style.position = "fixed";
+        box.style.opacity = "0";
+        document.body.appendChild(box);
+        box.select();
+        try { copied = document.execCommand("copy"); } catch (e) { copied = false; }
+        box.remove();
+      }
+
+      btn.textContent = copied ? "Copied!" : "Press Ctrl+C to copy";
+      setTimeout(() => { btn.textContent = original; }, 2000);
+    });
+  });
 
   // --- Footer year ---
   const year = document.getElementById("year");
