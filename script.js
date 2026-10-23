@@ -226,6 +226,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // --- Style filter chips (services page) ---
+  const filterButtons = document.querySelectorAll("[data-filter]");
+  const styleGroups = document.querySelectorAll("[data-group]");
+
+  if (filterButtons.length && styleGroups.length) {
+    // The chips start hidden in the HTML so the page works without JavaScript
+    const filterBar = filterButtons[0].closest(".style-filter");
+    if (filterBar) filterBar.hidden = false;
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const choice = btn.getAttribute("data-filter");
+        filterButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        styleGroups.forEach((group) => {
+          group.hidden = !(choice === "all" || group.getAttribute("data-group") === choice);
+        });
+      });
+    });
+  }
+
   // --- Footer year ---
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
