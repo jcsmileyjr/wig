@@ -112,13 +112,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo-mark {
+  flex: none;
   width: 34px; height: 34px; border-radius: 50%;
   background: linear-gradient(135deg, var(--plum-700), var(--gold-500));
 }
-.logo-text { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; color: var(--plum-900); }
+.logo-text { display: flex; flex-direction: column; font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--plum-900); }
 
 .main-nav ul { display: flex; align-items: center; gap: 22px; }
-.main-nav a { text-decoration: none; color: var(--ink); font-weight: 600; font-size: 0.95rem; }
+.main-nav a { text-decoration: none; color: var(--ink); font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
 .main-nav a:hover { color: var(--plum-700); }
 .main-nav a.btn { color: var(--plum-900); }
 .main-nav a[aria-current="true"]:not(.btn),
@@ -288,14 +289,16 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .field-label { display: block; font-weight: 600; margin-bottom: 8px; }
 .input-wrap { position: relative; max-width: 220px; margin-bottom: 22px; }
 .input-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--plum-800); }
-#retail-price {
+#retail-price,
+#plan-select {
   width: 100%;
   padding: 14px 16px 14px 34px;
   font-size: 1.2rem; font-weight: 700;
   border-radius: 12px; border: 2px solid transparent;
   background: var(--white); color: var(--plum-900);
 }
-#retail-price:focus { border-color: var(--gold-500); outline: none; }
+#retail-price:focus,
+#plan-select:focus { border-color: var(--gold-500); outline: none; }
 
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
 .compare-col { background: rgba(255, 255, 255, 0.08); border-radius: var(--radius); padding: 18px; text-align: center; }
@@ -417,7 +420,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 880px) {
+/* Tighten the menu a little on mid-size screens */
+@media (max-width: 1180px) {
+  .main-nav ul { gap: 18px; }
+}
+
+/* Switch to the menu button before the nav gets crowded */
+@media (max-width: 1100px) {
   .nav-toggle { display: block; }
   .main-nav {
     position: absolute;
@@ -435,7 +444,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .nav-account-item { display: block; }
   .main-nav .nav-cta-item { margin-top: 14px; }
   .main-nav .nav-cta-item a { border: 0; }
+}
 
+@media (max-width: 880px) {
   .hero-grid, .pricing-grid, .founder { grid-template-columns: 1fr; }
   .hero-visual { min-height: 360px; }
   .steps, .review-grid { grid-template-columns: 1fr; }
@@ -772,4 +783,32 @@ h4 { font-family: var(--font-head); color: var(--plum-900); line-height: 1.2; ma
 @media (prefers-reduced-motion: reduce) {
   .chip { transition: none; }
 }
+
+/* ==========================================================
+   Homepage updates: logo tagline, plan summary, calculator
+   ========================================================== */
+.logo-text small {
+  font-family: var(--font-body);
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold-600); margin-top: 4px;
+}
+
+.hygiene-note { margin: 28px 0 0; text-align: center; color: var(--muted); font-weight: 600; }
+
+.price-amount .from { font-family: var(--font-body); font-size: 1.1rem; font-weight: 600; color: var(--muted); margin-right: 8px; }
+.plan-summary { margin: 14px 0 24px; }
+.plan-summary li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+  padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 0.97rem;
+}
+.plan-summary li:last-child { border-bottom: 0; }
+.plan-summary .plan-summary-group {
+  display: block; padding: 12px 0 2px; border-bottom: 0;
+  font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-600);
+}
+.plan-summary small { display: block; color: var(--muted); font-size: 0.82rem; }
+.plan-summary strong { color: var(--plum-900); white-space: nowrap; }
+
+.select-wrap { max-width: 340px; margin-bottom: 22px; }
+#plan-select { padding-left: 16px; font-size: 1rem; cursor: pointer; }
 

@@ -5,8 +5,13 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Settings you can change in one place ---
-  const PLAN_PRICE = 100;      // monthly subscription price
-  const PIECES_PER_MONTH = 2;  // wigs or weaves included each month
+  // Wig plans used by the savings calculator on the homepage.
+  // price = monthly price, wigs = wigs per month, defaultRetail = starting "what you usually pay" guess
+  const WIG_PLANS = {
+    "everyday-synthetic": { name: "Everyday Synthetic Box", price: 40, wigs: 1, note: "1 wig a month, yours to keep", defaultRetail: 60 },
+    "luxury-wig": { name: "Luxury Wig", price: 110, wigs: 1, note: "1 luxury wig, swap and return", defaultRetail: 250 },
+    "luxury-swap": { name: "Luxury Swap", price: 200, wigs: 2, note: "2 luxury wigs, swap and return", defaultRetail: 250 },
+  };
 
   // Business hours (used by the "open now" badge on the contact page)
   const HOURS_TIMEZONE = "America/Chicago";            // Central Time
@@ -72,14 +77,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Savings calculator ---
+  const planSelect = document.getElementById("plan-select");
   const priceInput = document.getElementById("retail-price");
+  const buyTitle = document.getElementById("buy-title");
   const buyTotal = document.getElementById("buy-total");
+  const planTitle = document.getElementById("plan-title");
+  const planValue = document.getElementById("plan-value");
+  const planSmall = document.getElementById("plan-small");
   const result = document.getElementById("savings-result");
 
   const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
+  let userEditedPrice = false;
 
   const updateSavings = () => {
-    if (!priceInput || !buyTotal || !result) return;
+    if (!planSelect || !priceInput || !buyTotal || !result) return;
+
+    const plan = WIG_PLANS[planSelect.value];
+    if (!plan) return;
+
+    // Right-hand column always reflects the chosen plan
+    if (planTitle) planTitle.textContent = "With " + plan.name;
+    if (planValue) planValue.textContent = money(plan.price);
+    if (planSmall) planSmall.textContent = plan.note;
+    if (buyTitle) buyTitle.textContent = "Buying " + plan.wigs + (plan.wigs === 1 ? " wig" : " wigs") + " a month";
 
     const retail = parseFloat(priceInput.value);
 
@@ -89,23 +109,31 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const buying = retail * PIECES_PER_MONTH;
-    const savings = buying - PLAN_PRICE;
+    const buying = retail * plan.wigs;
+    const savings = buying - plan.price;
     buyTotal.textContent = money(buying);
 
     if (savings > 0) {
       result.textContent = "You could save " + money(savings) + " a month.";
     } else if (savings === 0) {
-      result.textContent = "About the same price, with new looks every two weeks.";
+      result.textContent = "About the same price, with a new wig every month.";
     } else {
       // Be honest when buying is cheaper, so the page stays trustworthy
       result.textContent =
-        "At that price, buying costs less, but you wouldn't get a new look every two weeks.";
+        "At that price, buying costs less, but you'd miss out on a new wig every month.";
     }
   };
 
-  if (priceInput) {
-    priceInput.addEventListener("input", updateSavings);
+  if (planSelect && priceInput) {
+    planSelect.addEventListener("change", () => {
+      // Suggest a typical price for the plan until the visitor types their own
+      if (!userEditedPrice) priceInput.value = WIG_PLANS[planSelect.value].defaultRetail;
+      updateSavings();
+    });
+    priceInput.addEventListener("input", () => {
+      userEditedPrice = true;
+      updateSavings();
+    });
     updateSavings();
   }
 
@@ -250,3 +278,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 });
+
