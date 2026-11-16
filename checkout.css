@@ -237,6 +237,24 @@ textarea:focus-visible,
   border: 2px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--charcoal);
 }
 
+/* ---------- Step 3: customer information ---------- */
+.form-card { padding: 8px 16px 16px; }
+.form-fieldset { border: 0; border-bottom: 1px solid var(--line); margin: 0; padding: 12px 0 8px; min-width: 0; }
+.form-fieldset:last-child { border-bottom: 0; }
+.form-fieldset legend { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; color: var(--burgundy); padding: 0; }
+.form-row { margin: 12px 0; }
+.form-row label { display: block; font-weight: 700; margin-bottom: 6px; }
+.req { font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+.form-row input[type="text"], .form-row input[type="email"], .form-row input[type="tel"], .form-row select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit;
+  border: 2px solid #8c7a72; border-radius: var(--radius);
+  background: var(--white); color: var(--charcoal);
+}
+.form-row input[aria-invalid="true"], .form-row select[aria-invalid="true"] { border-color: var(--error); border-width: 3px; }
+.form-row .field-error { margin: 6px 0 0; }
+.check-row { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0; cursor: pointer; }
+.check-row input { width: 24px; height: 24px; flex: 0 0 24px; margin-top: 2px; accent-color: var(--burgundy); }
+
 /* ---------- Buttons ---------- */
 .step-actions { display: flex; gap: 12px; margin-top: 8px; }
 .btn-primary, .btn-secondary {

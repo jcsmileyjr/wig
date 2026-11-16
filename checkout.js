@@ -1,5 +1,5 @@
 // ===========================================================
-// checkout.js (Phase 4: hair preferences)
+// checkout.js (Phase 5: customer information)
 // - Reads the plan ID from the URL (checkout.html?plan=luxury-wig)
 // - Shows one of five step panels at a time
 // - Back / Next move between steps and never auto-advance
@@ -14,11 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const STEP_NAMES = ["Subscription", "Hair preferences", "Your information", "Review", "Confirmation"];
 
   // All checkout answers live here, so going Back and Next never loses them.
-  // TODO (Phase 5): add customer fields to this object.
   const checkoutState = {
     step: 1,
     plan: null, // the selected plan object from products.js
     preferences: {}, // step 2 answers: capSize, texture, length, color, style
+    customer: {      // step 3 answers (never any payment or password data)
+      firstName: "", lastName: "", email: "", phone: "",
+      street: "", apartment: "", city: "", state: "", zip: "",
+      consentOrderEmail: false, // unchecked by default
+      consentMarketing: false,  // unchecked by default, separate from order email
+    },
   };
 
   const planFromUrl = getPlanById(new URLSearchParams(window.location.search).get("plan"));
@@ -341,6 +346,85 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
+  // ---------- Step 3: customer information ----------
+  // The form is plain HTML in checkout.html. Here we fill the State
+  // list, copy what the customer types into checkoutState.customer,
+  // and show validation errors from validation.js beside each field.
+  const customerForm = document.getElementById("customer-form");
+
+  function setupCustomerForm() {
+    const stateSelect = document.getElementById("cust-state");
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "Choose your state";
+    stateSelect.appendChild(blank);
+    US_STATES.forEach(([code, name]) => {
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = name;
+      stateSelect.appendChild(opt);
+    });
+
+    // Text inputs and the State list
+    customerForm.querySelectorAll("[data-field]").forEach((el) => {
+      const name = el.dataset.field;
+      el.value = checkoutState.customer[name] || "";
+      el.addEventListener("input", () => {
+        checkoutState.customer[name] = el.value;
+        // Once a field was flagged, re-check it as the customer fixes it
+        if (!document.getElementById("error-" + name).hidden) showCustomerFieldError(name);
+      });
+      el.addEventListener("change", () => {
+        checkoutState.customer[name] = el.value;
+      });
+    });
+
+    // Consent checkboxes (kept separate on purpose)
+    customerForm.querySelectorAll("[data-consent]").forEach((box) => {
+      const name = box.dataset.consent;
+      box.checked = !!checkoutState.customer[name];
+      box.addEventListener("change", () => {
+        checkoutState.customer[name] = box.checked;
+      });
+    });
+
+    // Pressing Enter in a field should act like "Next", not reload the page
+    customerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      nextButton.click();
+    });
+  }
+
+  function showCustomerFieldError(name) {
+    const input = document.getElementById("cust-" + name);
+    const err = document.getElementById("error-" + name);
+    const message = REQUIRED_CUSTOMER_FIELDS.includes(name)
+      ? validateCustomerField(name, checkoutState.customer[name])
+      : "";
+    err.textContent = message;
+    err.hidden = !message;
+    if (message) input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
+    return message;
+  }
+
+  // Returns true when the form is valid. Otherwise shows an error beside
+  // every problem field (keeping everything the customer typed) and moves
+  // focus to the first one.
+  function validateCustomerStep() {
+    const errors = validateCustomer(checkoutState.customer);
+    let firstBad = null;
+    REQUIRED_CUSTOMER_FIELDS.forEach((name) => {
+      showCustomerFieldError(name);
+      if (errors[name] && !firstBad) firstBad = name;
+    });
+    if (firstBad) {
+      document.getElementById("cust-" + firstBad).focus();
+      return false;
+    }
+    return true;
+  }
+
   // ---------- Progress indicator ----------
   function renderProgress() {
     progressSteps.forEach((li) => {
@@ -384,7 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- Buttons ----------
   nextButton.addEventListener("click", () => {
-    // Step 1 needs a plan. TODO (Phase 5): validate step 3 too.
+    // Each step checks its own answers before letting the customer continue.
     if (checkoutState.step === 1 && !checkoutState.plan) {
       planError.textContent = "Please choose a plan to continue.";
       planError.hidden = false;
@@ -393,6 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (checkoutState.step === 2 && !validatePreferences()) return;
+    if (checkoutState.step === 3 && !validateCustomerStep()) return;
     if (checkoutState.step < TOTAL_STEPS) showStep(checkoutState.step + 1, true);
   });
 
@@ -405,6 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (year) year.textContent = new Date().getFullYear();
 
   renderPlanCards();
+  setupCustomerForm();
   renderPlanBar();
   showStep(1, false);
 });

@@ -7,6 +7,7 @@
   <meta name="description" content="Demo checkout for the She Blew My Money wig and weave subscription. No payment is collected.">
   <link rel="stylesheet" href="checkout.css">
   <script src="products.js" defer></script>
+  <script src="validation.js" defer></script>
   <script src="checkout.js" defer></script>
 </head>
 <body class="checkout-page">
@@ -88,7 +89,76 @@
 
       <section class="step-panel" id="step-3" data-step="3" aria-labelledby="step-3-title" hidden>
         <h1 class="step-title" id="step-3-title" tabindex="-1">Your information</h1>
-        <div class="card"><p class="placeholder">Placeholder. Customer information fields are built in Phase 5.</p></div>
+        <p class="notice">This is a demo. Please use made-up information, not your real details.</p>
+        <form id="customer-form" class="card form-card" novalidate>
+          <fieldset class="form-fieldset">
+            <legend>Contact details</legend>
+          <div class="form-row">
+            <label for="cust-firstName">First name <span class="req">(required)</span></label>
+            <input id="cust-firstName" name="firstName" data-field="firstName" type="text" autocomplete="given-name" maxlength="60" aria-describedby="error-firstName">
+            <p class="field-error" id="error-firstName" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-lastName">Last name <span class="req">(required)</span></label>
+            <input id="cust-lastName" name="lastName" data-field="lastName" type="text" autocomplete="family-name" maxlength="60" aria-describedby="error-lastName">
+            <p class="field-error" id="error-lastName" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-email">Email address <span class="req">(required)</span></label>
+            <input id="cust-email" name="email" data-field="email" type="email" inputmode="email" autocomplete="email" maxlength="120" aria-describedby="error-email">
+            <p class="field-error" id="error-email" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-phone">Phone number <span class="req">(required)</span></label>
+            <input id="cust-phone" name="phone" data-field="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" aria-describedby="error-phone">
+            <p class="field-error" id="error-phone" hidden></p>
+          </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>Shipping address</legend>
+          <div class="form-row">
+            <label for="cust-street">Street address <span class="req">(required)</span></label>
+            <input id="cust-street" name="street" data-field="street" type="text" autocomplete="address-line1" maxlength="120" aria-describedby="error-street">
+            <p class="field-error" id="error-street" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-apartment">Apartment or unit <span class="req">(optional)</span></label>
+            <input id="cust-apartment" name="apartment" data-field="apartment" type="text" autocomplete="address-line2" maxlength="60" aria-describedby="error-apartment">
+            <p class="field-error" id="error-apartment" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-city">City <span class="req">(required)</span></label>
+            <input id="cust-city" name="city" data-field="city" type="text" autocomplete="address-level2" maxlength="80" aria-describedby="error-city">
+            <p class="field-error" id="error-city" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-state">State <span class="req">(required)</span></label>
+            <select id="cust-state" name="state" data-field="state" autocomplete="address-level1" aria-describedby="error-state"></select>
+            <p class="field-error" id="error-state" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-zip">ZIP code <span class="req">(required)</span></label>
+            <input id="cust-zip" name="zip" data-field="zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" aria-describedby="error-zip">
+            <p class="field-error" id="error-zip" hidden></p>
+          </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>Email preferences (optional)</legend>
+            <p class="pref-help">Neither box is ticked unless you choose to. No emails are sent in this demo.</p>
+            <label class="check-row">
+              <input type="checkbox" id="cust-consentOrderEmail" data-consent="consentOrderEmail">
+              <span>Email me about my order (order updates only)</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="cust-consentMarketing" data-consent="consentMarketing">
+              <span>Send me offers and news (marketing, separate from order updates)</span>
+            </label>
+          </fieldset>
+          <!-- Lets the Enter key act like Next. Hidden from view; the visible Next button is below. -->
+          <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Continue</button>
+        </form>
       </section>
 
       <section class="step-panel" id="step-4" data-step="4" aria-labelledby="step-4-title" hidden>
