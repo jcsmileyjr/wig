@@ -1,0 +1,334 @@
+/* ==========================================================
+   checkout.css: the approved checkout look
+   Burgundy, champagne gold, warm cream, charcoal.
+   These colors belong to the checkout page only. The rest of
+   the site keeps its plum and gold look from style.css.
+   Mobile-first: base styles are for phones, @media adds room.
+   ========================================================== */
+:root {
+  --burgundy: #650d20;
+  --burgundy-dark: #4a0916;
+  --gold: #d8b56d;
+  --cream: #fff4e9;
+  --charcoal: #292020;
+  --muted: #5c4d4d;        /* readable on cream and white */
+  --line: #e6d3bf;
+  --white: #ffffff;
+  --error: #9b1c1c;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --shadow: 0 8px 24px rgba(41, 32, 32, 0.1);
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-head: Georgia, "Times New Roman", serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body.checkout-page {
+  margin: 0;
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.checkout-wrap { width: min(760px, 100% - 32px); margin-inline: auto; }
+
+a { color: var(--burgundy); }
+
+/* Visible keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--charcoal);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--gold);
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 8px;
+  background: var(--white); color: var(--burgundy);
+  padding: 10px 14px; border-radius: 8px; z-index: 10;
+}
+.skip-link:focus { left: 12px; }
+
+/* ---------- Header ---------- */
+.checkout-header { background: var(--burgundy); color: var(--white); border-bottom: 4px solid var(--gold); }
+.checkout-header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 0;
+}
+.checkout-brand { text-decoration: none; color: var(--white); display: flex; flex-direction: column; line-height: 1.2; }
+.checkout-brand-name { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; }
+.checkout-brand-sub { font-size: 0.8rem; color: var(--gold); }
+.checkout-exit { color: var(--white); font-size: 0.95rem; }
+.checkout-header a:focus-visible { outline-color: var(--white); box-shadow: none; }
+
+/* ---------- Main ---------- */
+.checkout-main { padding: 20px 0 48px; }
+
+.checkout-demo-banner {
+  margin: 0 0 20px; padding: 10px 14px;
+  background: var(--white); border: 1px solid var(--gold);
+  border-radius: var(--radius); font-size: 0.95rem;
+}
+
+/* ---------- Progress ----------
+   Never color alone: every step has a number or check, a text
+   label, and the current step is bold with an underline. */
+.progress {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+}
+.progress-step {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 6px; font-size: 0.72rem; color: var(--muted);
+}
+.progress-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700;
+  background: var(--white); border: 2px solid var(--line); color: var(--muted);
+}
+.progress-label { overflow-wrap: normal; }
+.progress-step.is-done .progress-dot { background: var(--gold); border-color: var(--gold); color: var(--charcoal); }
+.progress-step.is-current { color: var(--burgundy); font-weight: 700; }
+.progress-step.is-current .progress-dot { background: var(--burgundy); border-color: var(--burgundy); color: var(--white); }
+.progress-step.is-current .progress-label { text-decoration: underline; text-underline-offset: 4px; }
+
+.progress-text { margin: 12px 0 16px; text-align: center; font-weight: 600; color: var(--muted); }
+
+/* ---------- Selected plan bar ---------- */
+.plan-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: var(--burgundy); color: var(--white);
+  border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px;
+}
+.plan-bar[hidden] { display: none; }
+.plan-bar p { margin: 0; }
+.plan-bar-label { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+.plan-bar-name { font-weight: 700; }
+.plan-bar-price { font-weight: 700; text-align: right; }
+
+/* ---------- Step panels and cards ---------- */
+.step-panel[hidden] { display: none; }
+.step-title {
+  font-family: var(--font-head); color: var(--burgundy);
+  font-size: 1.7rem; line-height: 1.2; margin: 0 0 16px;
+}
+.step-title:focus { outline: none; }
+
+.card {
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 20px;
+}
+.card[hidden] { display: none; }
+.card-tag { margin: 0 0 4px; color: var(--muted); font-size: 0.95rem; }
+.card-title { margin: 0 0 6px; font-size: 1.35rem; color: var(--charcoal); }
+.card-price { margin: 4px 0 12px; font-size: 1.6rem; font-weight: 700; color: var(--burgundy); }
+.placeholder { margin: 0; color: var(--muted); }
+
+.check-list, .picker-list { padding-left: 20px; margin: 0 0 16px; }
+.picker-list li { margin: 8px 0; }
+
+/* ---------- Step 1: plan cards ---------- */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.step-intro { margin: 0 0 16px; color: var(--muted); }
+.plan-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+
+.help-box {
+  background: var(--white); border: 1px solid var(--gold);
+  border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px;
+}
+.help-box summary { cursor: pointer; font-weight: 700; color: var(--burgundy); }
+.help-box ul { margin: 10px 0 0; padding-left: 20px; }
+.help-box li { margin: 6px 0; }
+
+.notice {
+  background: var(--white); border-left: 6px solid var(--gold);
+  padding: 10px 14px; border-radius: 8px; margin: 0 0 16px; font-weight: 600;
+}
+.notice[hidden], .field-error[hidden] { display: none; }
+.field-error {
+  color: var(--error); font-weight: 700; margin: 12px 0;
+  padding: 10px 14px; border: 2px solid var(--error); border-radius: 8px; background: var(--white);
+}
+.field-error::before { content: "\26A0  "; }
+
+.plan-group { margin-bottom: 24px; }
+.plan-group-title { font-family: var(--font-head); font-size: 1.35rem; margin: 0; color: var(--charcoal); }
+.plan-group-blurb { margin: 2px 0 12px; color: var(--muted); font-size: 0.95rem; }
+.plan-grid { display: grid; gap: 14px; }
+
+.plan-option { display: block; cursor: pointer; }
+.plan-card {
+  display: flex; flex-direction: column; gap: 6px; height: 100%;
+  background: var(--white); border: 2px solid var(--line);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 16px;
+}
+.plan-option:hover .plan-card { border-color: var(--gold); }
+.plan-option input:checked + .plan-card {
+  border-color: var(--burgundy); background: #fffaf3;
+  box-shadow: 0 0 0 3px var(--burgundy), var(--shadow);
+}
+.plan-option input:focus-visible + .plan-card {
+  outline: 3px solid var(--charcoal); outline-offset: 3px;
+}
+.plan-photo {
+  aspect-ratio: 16 / 7; display: grid; place-items: center;
+  background: linear-gradient(135deg, #f3e2cc, #e8cfae);
+  border-radius: var(--radius); color: var(--muted);
+  font-size: 0.85rem; text-transform: capitalize;
+}
+.plan-card-name { font-weight: 700; font-size: 1.2rem; }
+.plan-card-price { font-size: 1.5rem; font-weight: 700; color: var(--burgundy); }
+.plan-card-equiv { color: var(--muted); font-size: 0.9rem; }
+.plan-card-summary { color: var(--charcoal); }
+.plan-card-note { font-size: 0.9rem; font-style: italic; color: var(--muted); }
+.plan-card .check-list { margin: 4px 0; font-size: 0.95rem; }
+.plan-card-help {
+  font-size: 0.88rem; color: var(--muted); background: var(--cream);
+  border-radius: 8px; padding: 8px 10px;
+}
+.plan-card-pick {
+  margin-top: auto; text-align: center; font-weight: 700;
+  padding: 10px 16px; border-radius: 999px;
+  border: 2px solid var(--burgundy); color: var(--burgundy); background: var(--white);
+}
+.plan-option input:checked + .plan-card .plan-card-pick { background: var(--burgundy); color: var(--white); }
+
+/* ---------- Step 2: hair preferences ---------- */
+.pref-group {
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  padding: 16px; margin: 0 0 18px; min-width: 0;
+}
+.pref-group legend, .pref-label {
+  font-weight: 700; font-size: 1.1rem; padding: 0 6px; color: var(--charcoal);
+}
+.pref-label { display: block; padding: 0; margin-bottom: 8px; }
+.pref-help { margin: 0 0 10px; color: var(--muted); font-size: 0.95rem; }
+.choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice { display: block; cursor: pointer; }
+.choice-card {
+  display: flex; flex-direction: column; gap: 2px; justify-content: center;
+  min-height: 64px; height: 100%; padding: 12px;
+  border: 2px solid var(--line); border-radius: var(--radius); background: var(--white);
+}
+.choice:hover .choice-card { border-color: var(--gold); }
+.choice-label { font-weight: 700; }
+.choice-hint { font-size: 0.85rem; color: var(--muted); }
+.choice input:checked + .choice-card {
+  border-color: var(--burgundy); background: #fffaf3;
+  box-shadow: 0 0 0 2px var(--burgundy);
+}
+/* A check mark so the chosen card is not shown by color alone */
+.choice input:checked + .choice-card .choice-label::before { content: "\2713  "; color: var(--burgundy); }
+.choice input:focus-visible + .choice-card { outline: 3px solid var(--charcoal); outline-offset: 3px; }
+.pref-select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit;
+  border: 2px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--charcoal);
+}
+
+/* ---------- Step 3: customer information ---------- */
+.form-card { padding: 8px 16px 16px; }
+.form-fieldset { border: 0; border-bottom: 1px solid var(--line); margin: 0; padding: 12px 0 8px; min-width: 0; }
+.form-fieldset:last-child { border-bottom: 0; }
+.form-fieldset legend { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; color: var(--burgundy); padding: 0; }
+.form-row { margin: 12px 0; }
+.form-row label { display: block; font-weight: 700; margin-bottom: 6px; }
+.req { font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+.form-row input[type="text"], .form-row input[type="email"], .form-row input[type="tel"], .form-row select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit;
+  border: 2px solid #8c7a72; border-radius: var(--radius);
+  background: var(--white); color: var(--charcoal);
+}
+.form-row input[aria-invalid="true"], .form-row select[aria-invalid="true"] { border-color: var(--error); border-width: 3px; }
+.form-row .field-error { margin: 6px 0 0; }
+.check-row { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0; cursor: pointer; }
+.check-row input { width: 24px; height: 24px; flex: 0 0 24px; margin-top: 2px; accent-color: var(--burgundy); }
+
+/* ---------- Step 4: review ---------- */
+.review-section { padding-top: 14px; }
+.review-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.review-head h2 { margin: 0; font-family: var(--font-head); font-size: 1.25rem; color: var(--burgundy); }
+.link-button {
+  background: none; border: 0; padding: 10px 6px; min-height: 44px;
+  font: inherit; font-weight: 700; color: var(--burgundy);
+  text-decoration: underline; cursor: pointer;
+}
+.review-list { margin: 8px 0 0; display: grid; grid-template-columns: 1fr; gap: 2px; }
+.review-list dt { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+.review-list dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.review-total { background: var(--burgundy); color: var(--white); }
+.review-total p { margin: 0; }
+.review-total-label { color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; }
+.review-total-amount { font-size: 1.8rem; font-weight: 700; margin: 2px 0 6px; }
+.review-total-note { font-size: 0.95rem; }
+
+/* ---------- Step 5: confirmation ---------- */
+.confirm-card { border: 2px solid var(--gold); }
+.confirm-badge {
+  display: inline-block; margin: 0 0 8px; padding: 4px 12px; border-radius: 999px;
+  background: var(--burgundy); color: var(--white); font-weight: 700; font-size: 0.85rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.confirm-heading { margin: 0 0 12px; font-family: var(--font-head); font-size: 1.5rem; color: var(--burgundy); }
+.confirm-label { margin: 12px 0 0; color: var(--muted); font-size: 0.9rem; }
+.order-id {
+  margin: 2px 0 12px; font-family: Consolas, "Courier New", monospace;
+  font-size: 1.15rem; font-weight: 700; word-break: break-all;
+  background: var(--cream); border-radius: 8px; padding: 8px 10px;
+}
+.confirm-card p { margin: 6px 0; }
+.confirm-links { text-align: center; margin: 8px 0 0; }
+
+/* ---------- Buttons ---------- */
+.step-actions { display: flex; gap: 12px; margin-top: 8px; }
+.btn-primary, .btn-secondary {
+  flex: 1; min-height: 52px; padding: 12px 20px;
+  font: inherit; font-weight: 700; font-size: 1.05rem;
+  border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--burgundy);
+}
+.btn-primary { background: var(--burgundy); color: var(--white); }
+.btn-primary:hover { background: var(--burgundy-dark); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-secondary { background: var(--white); color: var(--burgundy); }
+.btn-secondary:hover { background: var(--cream); }
+.btn-primary[hidden], .btn-secondary[hidden] { display: none; }
+/* When Back is hidden on step 1, Next should still fill the row */
+
+/* ---------- Footer ---------- */
+.checkout-footer { padding: 20px 0 32px; color: var(--muted); font-size: 0.85rem; text-align: center; }
+.checkout-footer p { margin: 0; }
+
+/* ---------- Wider screens ---------- */
+@media (min-width: 640px) {
+  .checkout-main { padding-top: 32px; }
+  .progress-step { font-size: 0.9rem; }
+  .progress-dot { width: 40px; height: 40px; }
+  .step-title { font-size: 2.1rem; }
+  .card { padding: 28px; }
+  .plan-grid { grid-template-columns: 1fr 1fr; }
+  .choice-grid { grid-template-columns: repeat(3, 1fr); }
+  .review-list { grid-template-columns: 160px 1fr; column-gap: 16px; }
+  .review-list dt { margin-top: 0; padding-top: 2px; }
+  .review-list dd { margin-bottom: 6px; }
+  .step-actions { justify-content: space-between; }
+  .btn-primary, .btn-secondary { flex: 0 0 auto; min-width: 160px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+.storage-note { max-width: 560px; margin: 0 auto 12px !important; }
+.checkout-footer .link-button { display: block; margin: 4px auto 0; font-size: 0.95rem; }

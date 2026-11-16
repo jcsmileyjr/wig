@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout | She Blew My Money | Weave &amp; Wig Subscription</title>
+  <meta name="description" content="Demo checkout for the She Blew My Money wig and weave subscription. No payment is collected.">
+  <link rel="stylesheet" href="checkout.css">
+  <script src="products.js" defer></script>
+  <script src="validation.js" defer></script>
+  <script src="storage.js" defer></script>
+  <script src="checkout.js" defer></script>
+</head>
+<body class="checkout-page">
+
+  <a class="skip-link" href="#checkout-main">Skip to checkout</a>
+
+  <!-- CHECKOUT HEADER: brand only, so customers stay focused -->
+  <header class="checkout-header">
+    <div class="checkout-wrap checkout-header-inner">
+      <a class="checkout-brand" href="index.html" aria-label="She Blew My Money home">
+        <span class="checkout-brand-name">She Blew My Money</span>
+        <span class="checkout-brand-sub">Weave &amp; Wig Subscription</span>
+      </a>
+      <a class="checkout-exit" href="services.html#plans">Back to plans</a>
+    </div>
+  </header>
+
+  <main id="checkout-main" class="checkout-main">
+    <div class="checkout-wrap">
+
+      <p class="checkout-demo-banner" role="note">
+        <strong>Demo only.</strong> No payment is collected and no real order is placed.
+      </p>
+
+      <!-- PROGRESS: five steps, each with a number and a text label -->
+      <nav aria-label="Checkout progress">
+        <ol class="progress" id="progress">
+          <li class="progress-step" data-step="1"><span class="progress-dot" aria-hidden="true">1</span><span class="progress-label">Plan</span></li>
+          <li class="progress-step" data-step="2"><span class="progress-dot" aria-hidden="true">2</span><span class="progress-label">Hair</span></li>
+          <li class="progress-step" data-step="3"><span class="progress-dot" aria-hidden="true">3</span><span class="progress-label">Your info</span></li>
+          <li class="progress-step" data-step="4"><span class="progress-dot" aria-hidden="true">4</span><span class="progress-label">Review</span></li>
+          <li class="progress-step" data-step="5"><span class="progress-dot" aria-hidden="true">5</span><span class="progress-label">Done</span></li>
+        </ol>
+      </nav>
+      <p class="progress-text" id="progress-text" aria-live="polite"></p>
+
+      <!-- SELECTED PLAN BAR: visible on every step once a plan is chosen -->
+      <div class="plan-bar" id="plan-bar" hidden>
+        <div>
+          <p class="plan-bar-label">Your plan</p>
+          <p class="plan-bar-name" id="plan-bar-name"></p>
+        </div>
+        <p class="plan-bar-price" id="plan-bar-price"></p>
+      </div>
+
+      <!-- STEP PANELS -->
+      <section class="step-panel" id="step-1" data-step="1" aria-labelledby="step-1-title">
+        <h1 class="step-title" id="step-1-title" tabindex="-1">Choose your subscription</h1>
+
+        <p class="step-intro">Pick the plan that fits how you wear your hair. You can change it any time before you review your order.</p>
+
+        <!-- Help me choose: plain-language wig vs weave explanation -->
+        <details class="help-box">
+          <summary>Help me choose: wig or weave?</summary>
+          <ul>
+            <li><strong>A wig</strong> is worn over your head. You can put it on and take it off whenever you like.</li>
+            <li><strong>A weave</strong> is hair that is installed into your natural hair, usually by a stylist. Our weave boxes contain hair only, so bring yours to your stylist.</li>
+          </ul>
+        </details>
+
+        <!-- Shown when the URL had a plan we don't recognise -->
+        <p class="notice" id="plan-notice" role="status" hidden></p>
+
+        <!-- Plan cards are built by checkout.js from products.js -->
+        <fieldset class="plan-fieldset">
+          <legend class="sr-only">Choose one subscription plan</legend>
+          <div id="plan-groups"></div>
+        </fieldset>
+
+        <p class="field-error" id="plan-error" role="alert" hidden></p>
+      </section>
+
+      <section class="step-panel" id="step-2" data-step="2" aria-labelledby="step-2-title" hidden>
+        <h1 class="step-title" id="step-2-title" tabindex="-1">Hair preferences</h1>
+        <p class="step-intro" id="preferences-intro"></p>
+        <p class="notice">Your choices tell us what to aim for. Availability is not guaranteed.</p>
+        <div id="preferences-form"></div>
+      </section>
+
+      <section class="step-panel" id="step-3" data-step="3" aria-labelledby="step-3-title" hidden>
+        <h1 class="step-title" id="step-3-title" tabindex="-1">Your information</h1>
+        <p class="notice">This is a demo. Please use made-up information, not your real details.</p>
+        <form id="customer-form" class="card form-card" novalidate>
+          <fieldset class="form-fieldset">
+            <legend>Contact details</legend>
+          <div class="form-row">
+            <label for="cust-firstName">First name <span class="req">(required)</span></label>
+            <input id="cust-firstName" name="firstName" data-field="firstName" type="text" autocomplete="given-name" maxlength="60" aria-describedby="error-firstName">
+            <p class="field-error" id="error-firstName" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-lastName">Last name <span class="req">(required)</span></label>
+            <input id="cust-lastName" name="lastName" data-field="lastName" type="text" autocomplete="family-name" maxlength="60" aria-describedby="error-lastName">
+            <p class="field-error" id="error-lastName" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-email">Email address <span class="req">(required)</span></label>
+            <input id="cust-email" name="email" data-field="email" type="email" inputmode="email" autocomplete="email" maxlength="120" aria-describedby="error-email">
+            <p class="field-error" id="error-email" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-phone">Phone number <span class="req">(required)</span></label>
+            <input id="cust-phone" name="phone" data-field="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" aria-describedby="error-phone">
+            <p class="field-error" id="error-phone" hidden></p>
+          </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>Shipping address</legend>
+          <div class="form-row">
+            <label for="cust-street">Street address <span class="req">(required)</span></label>
+            <input id="cust-street" name="street" data-field="street" type="text" autocomplete="address-line1" maxlength="120" aria-describedby="error-street">
+            <p class="field-error" id="error-street" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-apartment">Apartment or unit <span class="req">(optional)</span></label>
+            <input id="cust-apartment" name="apartment" data-field="apartment" type="text" autocomplete="address-line2" maxlength="60" aria-describedby="error-apartment">
+            <p class="field-error" id="error-apartment" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-city">City <span class="req">(required)</span></label>
+            <input id="cust-city" name="city" data-field="city" type="text" autocomplete="address-level2" maxlength="80" aria-describedby="error-city">
+            <p class="field-error" id="error-city" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-state">State <span class="req">(required)</span></label>
+            <select id="cust-state" name="state" data-field="state" autocomplete="address-level1" aria-describedby="error-state"></select>
+            <p class="field-error" id="error-state" hidden></p>
+          </div>
+          <div class="form-row">
+            <label for="cust-zip">ZIP code <span class="req">(required)</span></label>
+            <input id="cust-zip" name="zip" data-field="zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" aria-describedby="error-zip">
+            <p class="field-error" id="error-zip" hidden></p>
+          </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>Email preferences (optional)</legend>
+            <p class="pref-help">Neither box is ticked unless you choose to. No emails are sent in this demo.</p>
+            <label class="check-row">
+              <input type="checkbox" id="cust-consentOrderEmail" data-consent="consentOrderEmail">
+              <span>Email me about my order (order updates only)</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="cust-consentMarketing" data-consent="consentMarketing">
+              <span>Send me offers and news (marketing, separate from order updates)</span>
+            </label>
+          </fieldset>
+          <!-- Lets the Enter key act like Next. Hidden from view; the visible Next button is below. -->
+          <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Continue</button>
+        </form>
+      </section>
+
+      <section class="step-panel" id="step-4" data-step="4" aria-labelledby="step-4-title" hidden>
+        <h1 class="step-title" id="step-4-title" tabindex="-1">Review your order</h1>
+        <p class="step-intro">Check everything below. Use Edit to change anything.</p>
+        <p class="notice review-demo-notice"><strong>Demo order.</strong> No payment will be collected and nothing will be charged or shipped.</p>
+        <div id="review-content"></div>
+        <p class="field-error" id="order-error" role="alert" hidden></p>
+      </section>
+
+      <section class="step-panel" id="step-5" data-step="5" aria-labelledby="step-5-title" hidden>
+        <h1 class="step-title" id="step-5-title" tabindex="-1">Order confirmation</h1>
+        <div class="card confirm-card">
+          <p class="confirm-badge">Demo order</p>
+          <h2 class="confirm-heading">Your demo order has been placed.</h2>
+          <p class="confirm-label">Order ID</p>
+          <p class="order-id" id="confirm-order-id"></p>
+          <p><strong>Status:</strong> <span id="confirm-status"></span></p>
+          <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
+          <p>No payment was collected or processed, and nothing will be shipped. This demo order is saved only in this browser.</p>
+        </div>
+        <div id="confirmation-summary"></div>
+        <p class="confirm-links"><a href="checkout.html">Start another demo order</a> &middot; <a href="index.html">Back to the home page</a></p>
+      </section>
+
+      <!-- BACK / NEXT -->
+      <div class="step-actions" id="step-actions">
+        <button type="button" class="btn-secondary" id="back-button">Back</button>
+        <button type="button" class="btn-primary" id="next-button">Next</button>
+      </div>
+
+      <noscript><p class="card">Checkout needs JavaScript turned on. Please enable it and reload.</p></noscript>
+    </div>
+  </main>
+
+  <footer class="checkout-footer">
+    <div class="checkout-wrap">
+      <p class="storage-note">
+        To save your place, this demo remembers your answers in this browser only.
+        Browser storage is not secure and is not shared between devices, so please use made-up information.
+        <button type="button" class="link-button" id="clear-draft-button">Clear saved answers and start over</button>
+      </p>
+      <p>&copy; <span id="year">2026</span> She Blew My Money | Weave &amp; Wig Subscription. Demonstration checkout.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
