@@ -31,6 +31,8 @@ const PLANS = [
     frequency: "month",
     frequencyLabel: "/month",
     summary: "One luxury human hair wig a month.",
+    note: "Pre-cut, glueless closures only",
+    terms: ["glueless"],
     included: [
       "1 luxury human hair wig a month",
       "Cleaned, inspected, and sealed before it ships",
@@ -47,6 +49,8 @@ const PLANS = [
     frequency: "month",
     frequencyLabel: "/month",
     summary: "Two luxury human hair wigs a month.",
+    note: "Pre-cut, glueless closures only",
+    terms: ["glueless"],
     included: [
       "2 luxury human hair wigs a month",
       "Cleaned, inspected, and sealed before they ship",
@@ -79,6 +83,8 @@ const PLANS = [
     frequency: "every 90 days",
     frequencyLabel: " every 90 days",
     summary: "Everything you need for a full install.",
+    equivalent: "About $117 a month",
+    terms: ["closure", "frontal"],
     included: [
       "3 bundles of human hair",
       "Closure and frontal both included",
@@ -87,6 +93,14 @@ const PLANS = [
     ],
   },
 ];
+
+// Plain-language explanations for hair terms customers may not know.
+// Shown on plan cards whose `terms` list includes the key.
+const GLOSSARY = {
+  glueless: "Glueless means the wig stays on with its built-in bands or straps, so no glue or adhesive is needed.",
+  closure: "A closure is a small piece of lace that finishes the top of a weave and creates a natural-looking part.",
+  frontal: "A frontal is a larger piece of lace that runs ear to ear across the front hairline, for a natural hairline and flexible parting.",
+};
 
 // Returns the plan with this ID, or null when the ID is missing or unknown.
 function getPlanById(id) {

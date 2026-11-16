@@ -56,22 +56,27 @@
       <section class="step-panel" id="step-1" data-step="1" aria-labelledby="step-1-title">
         <h1 class="step-title" id="step-1-title" tabindex="-1">Choose your subscription</h1>
 
-        <!-- Shown when the URL has a valid plan (Phase 3 turns this into the five plan cards) -->
-        <div class="card" id="selected-plan" hidden>
-          <p class="card-tag" id="selected-plan-type"></p>
-          <h2 class="card-title" id="selected-plan-heading"></h2>
-          <p class="card-price" id="selected-plan-price"></p>
-          <p id="selected-plan-summary"></p>
-          <ul class="check-list" id="selected-plan-included"></ul>
-          <p><a href="checkout.html">Choose a different plan</a></p>
-        </div>
+        <p class="step-intro">Pick the plan that fits how you wear your hair. You can change it any time before you review your order.</p>
 
-        <!-- Shown when the plan is missing or not recognised -->
-        <div class="card" id="plan-picker" hidden>
-          <h2 class="card-title">Choose a plan to get started</h2>
-          <p id="plan-picker-message"></p>
-          <ul class="picker-list" id="plan-picker-list"></ul>
-        </div>
+        <!-- Help me choose: plain-language wig vs weave explanation -->
+        <details class="help-box">
+          <summary>Help me choose: wig or weave?</summary>
+          <ul>
+            <li><strong>A wig</strong> is worn over your head. You can put it on and take it off whenever you like.</li>
+            <li><strong>A weave</strong> is hair that is installed into your natural hair, usually by a stylist. Our weave boxes contain hair only, so bring yours to your stylist.</li>
+          </ul>
+        </details>
+
+        <!-- Shown when the URL had a plan we don't recognise -->
+        <p class="notice" id="plan-notice" role="status" hidden></p>
+
+        <!-- Plan cards are built by checkout.js from products.js -->
+        <fieldset class="plan-fieldset">
+          <legend class="sr-only">Choose one subscription plan</legend>
+          <div id="plan-groups"></div>
+        </fieldset>
+
+        <p class="field-error" id="plan-error" role="alert" hidden></p>
       </section>
 
       <section class="step-panel" id="step-2" data-step="2" aria-labelledby="step-2-title" hidden>
