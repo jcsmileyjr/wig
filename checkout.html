@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="checkout.css">
   <script src="products.js" defer></script>
   <script src="validation.js" defer></script>
+  <script src="storage.js" defer></script>
   <script src="checkout.js" defer></script>
 </head>
 <body class="checkout-page">
@@ -166,11 +167,22 @@
         <p class="step-intro">Check everything below. Use Edit to change anything.</p>
         <p class="notice review-demo-notice"><strong>Demo order.</strong> No payment will be collected and nothing will be charged or shipped.</p>
         <div id="review-content"></div>
+        <p class="field-error" id="order-error" role="alert" hidden></p>
       </section>
 
       <section class="step-panel" id="step-5" data-step="5" aria-labelledby="step-5-title" hidden>
         <h1 class="step-title" id="step-5-title" tabindex="-1">Order confirmation</h1>
-        <div class="card"><p class="placeholder">Placeholder. The demo order confirmation is built in Phase 7.</p></div>
+        <div class="card confirm-card">
+          <p class="confirm-badge">Demo order</p>
+          <h2 class="confirm-heading">Your demo order has been placed.</h2>
+          <p class="confirm-label">Order ID</p>
+          <p class="order-id" id="confirm-order-id"></p>
+          <p><strong>Status:</strong> <span id="confirm-status"></span></p>
+          <p><strong>Payment:</strong> <span id="confirm-payment"></span></p>
+          <p>No payment was collected or processed, and nothing will be shipped. This demo order is saved only in this browser.</p>
+        </div>
+        <div id="confirmation-summary"></div>
+        <p class="confirm-links"><a href="checkout.html">Start another demo order</a> &middot; <a href="index.html">Back to the home page</a></p>
       </section>
 
       <!-- BACK / NEXT -->

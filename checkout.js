@@ -1,5 +1,5 @@
 // ===========================================================
-// checkout.js (Phase 6: review order)
+// checkout.js (Phase 7: place the demo order)
 // - Reads the plan ID from the URL (checkout.html?plan=luxury-wig)
 // - Shows one of five step panels at a time
 // - Back / Next move between steps and never auto-advance
@@ -159,6 +159,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const chosen = label.querySelector("input").checked;
       label.querySelector(".plan-card-pick").textContent = chosen ? "\u2713 Selected" : "Select plan";
     });
+  }
+
+  // Step 1 needs a plan. Shows an error and focuses the cards if none is chosen.
+  function validateStepOne() {
+    if (checkoutState.plan) return true;
+    planError.textContent = "Please choose a plan to continue.";
+    planError.hidden = false;
+    const firstRadio = document.querySelector('input[name="plan"]');
+    if (firstRadio) firstRadio.focus();
+    return false;
   }
 
   function selectPlan(planId) {
@@ -436,6 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return match ? match.label : value;
   }
 
+  // One block of the summary. Pass editStep = null for a read-only block.
   function makeReviewSection(title, editStep, rows) {
     const section = document.createElement("section");
     section.className = "card review-section";
@@ -444,13 +455,17 @@ document.addEventListener("DOMContentLoaded", () => {
     head.className = "review-head";
     const heading = document.createElement("h2");
     heading.textContent = title;
-    const edit = document.createElement("button");
-    edit.type = "button";
-    edit.className = "link-button";
-    edit.textContent = "Edit";
-    edit.setAttribute("aria-label", "Edit " + title.toLowerCase());
-    edit.addEventListener("click", () => showStep(editStep, true));
-    head.append(heading, edit);
+    head.appendChild(heading);
+
+    if (editStep) {
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "link-button";
+      edit.textContent = "Edit";
+      edit.setAttribute("aria-label", "Edit " + title.toLowerCase());
+      edit.addEventListener("click", () => showStep(editStep, true));
+      head.appendChild(edit);
+    }
 
     const list = document.createElement("dl");
     list.className = "review-list";
@@ -467,20 +482,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return section;
   }
 
-  function renderReview() {
-    const plan = checkoutState.plan;
-    const prefs = checkoutState.preferences;
-    const c = checkoutState.customer;
-    reviewContent.textContent = "";
-    if (!plan) return;
+  // Builds the order summary into `container`. Used by the review step
+  // (editable) and by the confirmation (read-only), so both always match.
+  // data = { planName, typeText, priceText, prefs, customer }
+  function renderSummary(container, data, editable) {
+    const prefs = data.prefs;
+    const c = data.customer;
+    container.textContent = "";
 
-    reviewContent.appendChild(makeReviewSection("Subscription", 1, [
-      ["Plan", plan.name],
-      ["Type", (plan.category === "wig" ? "Wig" : "Weave") + " \u00b7 " + plan.hairType],
-      ["Price", formatPlanPrice(plan)],
+    container.appendChild(makeReviewSection("Subscription", editable ? 1 : null, [
+      ["Plan", data.planName],
+      ["Type", data.typeText],
+      ["Price", data.priceText],
     ]));
 
-    reviewContent.appendChild(makeReviewSection("Hair preferences", 2, [
+    container.appendChild(makeReviewSection("Hair preferences", editable ? 2 : null, [
       ["Cap size", prefs.capSize ? optionLabel(HAIR_OPTIONS.capSizes, prefs.capSize) : ""],
       ["Texture", optionLabel(HAIR_OPTIONS.textures, prefs.texture)],
       ["Length", prefs.length ? prefs.length + " inches" : ""],
@@ -489,7 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ]));
 
     const cityLine = c.city.trim() + ", " + c.state + " " + c.zip.trim();
-    reviewContent.appendChild(makeReviewSection("Your information", 3, [
+    container.appendChild(makeReviewSection("Your information", editable ? 3 : null, [
       ["Name", c.firstName.trim() + " " + c.lastName.trim()],
       ["Email", c.email.trim()],
       ["Phone", c.phone.trim()],
@@ -507,12 +523,164 @@ document.addEventListener("DOMContentLoaded", () => {
     label.textContent = "Subscription price";
     const amount = document.createElement("p");
     amount.className = "review-total-amount";
-    amount.textContent = formatPlanPrice(plan);
+    amount.textContent = data.priceText;
     const note = document.createElement("p");
     note.className = "review-total-note";
     note.textContent = "Shipping, tax and other charges are not set up in this demo. No payment is collected.";
     summary.append(label, amount, note);
-    reviewContent.appendChild(summary);
+    container.appendChild(summary);
+  }
+
+  function renderReview() {
+    const plan = checkoutState.plan;
+    if (!plan) { reviewContent.textContent = ""; return; }
+    renderSummary(reviewContent, {
+      planName: plan.name,
+      typeText: (plan.category === "wig" ? "Wig" : "Weave") + " \u00b7 " + plan.hairType,
+      priceText: formatPlanPrice(plan),
+      prefs: checkoutState.preferences,
+      customer: checkoutState.customer,
+    }, true);
+  }
+
+  // ---------- Steps 4 and 5: place the demo order ----------
+  const orderError = document.getElementById("order-error");
+  let orderInProgress = false; // blocks double clicks while an order is being made
+  let orderPlaced = false;     // blocks a second order after one succeeded
+
+  // A short, unique demo ID such as SBM-DEMO-LZ3K9A-7QF2
+  function generateOrderId() {
+    const existing = getOrders().map((o) => o.orderId);
+    let id;
+    do {
+      let random = "";
+      if (window.crypto && window.crypto.getRandomValues) {
+        const bytes = new Uint8Array(4);
+        window.crypto.getRandomValues(bytes);
+        random = Array.from(bytes, (b) => (b % 36).toString(36)).join("");
+      } else {
+        random = Math.random().toString(36).slice(2, 6).padEnd(4, "0");
+      }
+      id = "SBM-DEMO-" + Date.now().toString(36).toUpperCase() + "-" + random.toUpperCase();
+    } while (existing.includes(id));
+    return id;
+  }
+
+  // Checks all answers again. Returns the step number to send the customer
+  // back to, or 0 when everything is complete.
+  function findIncompleteStep() {
+    const plan = checkoutState.plan;
+    if (!plan) return 1;
+    const prefs = checkoutState.preferences;
+    const requiredPrefs = ["texture", "length", "color"];
+    if (plan.category === "wig") requiredPrefs.unshift("capSize");
+    if (requiredPrefs.some((f) => !prefs[f])) return 2;
+    if (Object.keys(validateCustomer(checkoutState.customer)).length > 0) return 3;
+    return 0;
+  }
+
+  function buildOrder() {
+    const plan = checkoutState.plan;
+    const c = checkoutState.customer;
+    const prefs = checkoutState.preferences;
+    return {
+      orderId: generateOrderId(),
+      createdAt: new Date().toISOString(),
+      customer: {
+        firstName: c.firstName.trim(),
+        lastName: c.lastName.trim(),
+        email: c.email.trim(),
+        phone: c.phone.trim(),
+        shippingAddress: {
+          street: c.street.trim(),
+          apartment: c.apartment.trim(),
+          city: c.city.trim(),
+          state: c.state,
+          zip: c.zip.trim(),
+        },
+      },
+      consent: { orderEmail: !!c.consentOrderEmail, marketing: !!c.consentMarketing },
+      subscription: { id: plan.id, name: plan.name, price: plan.price, frequency: plan.frequency },
+      preferences: Object.assign({}, prefs),
+      status: "Pending",
+      payment: { type: "Demo", paid: false },
+      notifications: { businessEmail: "not-configured", customerEmail: "not-configured" },
+    };
+  }
+
+  function placeDemoOrder() {
+    if (orderInProgress || orderPlaced) return; // ignore repeated clicks
+    orderInProgress = true;
+    nextButton.disabled = true;
+    orderError.hidden = true;
+
+    try {
+      const problemStep = findIncompleteStep();
+      if (problemStep) {
+        showStep(problemStep, true);
+        if (problemStep === 1) validateStepOne();
+        if (problemStep === 2) validatePreferences();
+        if (problemStep === 3) validateCustomerStep();
+        return;
+      }
+
+      const order = buildOrder();
+      // Save FIRST. Nothing else (like future email) may happen before this.
+      if (!saveOrder(order)) {
+        orderError.textContent =
+          "We couldn't save your demo order in this browser. Storage may be blocked or full. Please try again.";
+        orderError.hidden = false;
+        return;
+      }
+      orderPlaced = true;
+
+      // TODO: FUTURE PHASE — EMAIL INTEGRATION
+      // Integrate an approved email service (e.g. EmailJS).
+      // Send a business-owner order notification.
+      // Send a customer order confirmation.
+      // Track notification success/failure separately from order creation.
+      // Never allow email failure to erase or duplicate a saved order.
+      // Do not add email credentials or templates in this build.
+
+      // Put the order ID in the address, so refreshing shows the confirmation
+      try { history.replaceState(null, "", "?order=" + encodeURIComponent(order.orderId)); } catch (err) { /* fine */ }
+      renderConfirmation(order);
+      showStep(5, true);
+    } finally {
+      orderInProgress = false;
+      nextButton.disabled = false;
+    }
+  }
+
+  // Shows the confirmation from the SAVED order, so it always matches it.
+  function renderConfirmation(order) {
+    document.getElementById("confirm-order-id").textContent = order.orderId;
+    document.getElementById("confirm-status").textContent = order.status;
+    document.getElementById("confirm-payment").textContent =
+      order.payment && order.payment.type === "Demo" && order.payment.paid === false
+        ? "Demo only. Nothing was charged."
+        : "Demo";
+
+    const planNow = getPlanById(order.subscription.id);
+    const a = order.customer.shippingAddress || {};
+    renderSummary(document.getElementById("confirmation-summary"), {
+      planName: order.subscription.name,
+      typeText: planNow ? (planNow.category === "wig" ? "Wig" : "Weave") + " \u00b7 " + planNow.hairType : "",
+      priceText: planNow ? formatPlanPrice(planNow) : "$" + order.subscription.price + " " + order.subscription.frequency,
+      prefs: order.preferences || {},
+      customer: {
+        firstName: order.customer.firstName, lastName: order.customer.lastName,
+        email: order.customer.email, phone: order.customer.phone,
+        street: a.street || "", apartment: a.apartment || "", city: a.city || "",
+        state: a.state || "", zip: a.zip || "",
+        consentOrderEmail: !!(order.consent && order.consent.orderEmail),
+        consentMarketing: !!(order.consent && order.consent.marketing),
+      },
+    }, false);
+
+    // Show the plan bar for the confirmed order
+    checkoutState.plan = planNow || checkoutState.plan;
+    renderPlanBar();
   }
 
   // ---------- Progress indicator ----------
@@ -543,7 +711,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (step === 4) renderReview();
 
     backButton.hidden = step === 1;
-    // The final step is the end of the flow; later phases add the order button on step 4.
+    // Step 4 places the demo order, so its button says exactly that
+    nextButton.textContent = step === 4 ? "Complete Demo Order" : "Next";
     nextButton.hidden = step === TOTAL_STEPS;
     if (step === TOTAL_STEPS) backButton.hidden = true;
 
@@ -560,15 +729,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Buttons ----------
   nextButton.addEventListener("click", () => {
     // Each step checks its own answers before letting the customer continue.
-    if (checkoutState.step === 1 && !checkoutState.plan) {
-      planError.textContent = "Please choose a plan to continue.";
-      planError.hidden = false;
-      const firstRadio = document.querySelector('input[name="plan"]');
-      if (firstRadio) firstRadio.focus();
-      return;
-    }
+    if (checkoutState.step === 1 && !validateStepOne()) return;
     if (checkoutState.step === 2 && !validatePreferences()) return;
     if (checkoutState.step === 3 && !validateCustomerStep()) return;
+    if (checkoutState.step === 4) { placeDemoOrder(); return; }
     if (checkoutState.step < TOTAL_STEPS) showStep(checkoutState.step + 1, true);
   });
 
@@ -583,5 +747,19 @@ document.addEventListener("DOMContentLoaded", () => {
   renderPlanCards();
   setupCustomerForm();
   renderPlanBar();
-  showStep(1, false);
+
+  // Coming back to ?order=ID (for example after a refresh) shows that saved order
+  const orderIdInUrl = new URLSearchParams(window.location.search).get("order");
+  const savedOrder = orderIdInUrl ? getOrderById(orderIdInUrl) : null;
+  if (savedOrder) {
+    orderPlaced = true; // this checkout is finished; start a new one from the link
+    renderConfirmation(savedOrder);
+    showStep(5, false);
+  } else {
+    if (orderIdInUrl) {
+      planNotice.textContent = "We couldn't find that demo order in this browser. You can start a new one below.";
+      planNotice.hidden = false;
+    }
+    showStep(1, false);
+  }
 });

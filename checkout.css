@@ -273,6 +273,23 @@ textarea:focus-visible,
 .review-total-amount { font-size: 1.8rem; font-weight: 700; margin: 2px 0 6px; }
 .review-total-note { font-size: 0.95rem; }
 
+/* ---------- Step 5: confirmation ---------- */
+.confirm-card { border: 2px solid var(--gold); }
+.confirm-badge {
+  display: inline-block; margin: 0 0 8px; padding: 4px 12px; border-radius: 999px;
+  background: var(--burgundy); color: var(--white); font-weight: 700; font-size: 0.85rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.confirm-heading { margin: 0 0 12px; font-family: var(--font-head); font-size: 1.5rem; color: var(--burgundy); }
+.confirm-label { margin: 12px 0 0; color: var(--muted); font-size: 0.9rem; }
+.order-id {
+  margin: 2px 0 12px; font-family: Consolas, "Courier New", monospace;
+  font-size: 1.15rem; font-weight: 700; word-break: break-all;
+  background: var(--cream); border-radius: 8px; padding: 8px 10px;
+}
+.confirm-card p { margin: 6px 0; }
+.confirm-links { text-align: center; margin: 8px 0 0; }
+
 /* ---------- Buttons ---------- */
 .step-actions { display: flex; gap: 12px; margin-top: 8px; }
 .btn-primary, .btn-secondary {
@@ -283,6 +300,7 @@ textarea:focus-visible,
 }
 .btn-primary { background: var(--burgundy); color: var(--white); }
 .btn-primary:hover { background: var(--burgundy-dark); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary { background: var(--white); color: var(--burgundy); }
 .btn-secondary:hover { background: var(--cream); }
 .btn-primary[hidden], .btn-secondary[hidden] { display: none; }
