@@ -5,51 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Checkout | She Blew My Money | Weave &amp; Wig Subscription</title>
   <meta name="description" content="Demo checkout for the She Blew My Money wig and weave subscription. No payment is collected.">
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="checkout.css">
   <script src="products.js" defer></script>
   <script src="checkout.js" defer></script>
 </head>
-<body>
+<body class="checkout-page">
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="index.html" aria-label="She Blew My Money home">
-        <span class="logo-mark" aria-hidden="true"></span>
-        <span class="logo-text">She Blew My Money<small>Weave &amp; Wig Subscription</small></span>
+  <a class="skip-link" href="#checkout-main">Skip to checkout</a>
+
+  <!-- CHECKOUT HEADER: brand only, so customers stay focused -->
+  <header class="checkout-header">
+    <div class="checkout-wrap checkout-header-inner">
+      <a class="checkout-brand" href="index.html" aria-label="She Blew My Money home">
+        <span class="checkout-brand-name">She Blew My Money</span>
+        <span class="checkout-brand-sub">Weave &amp; Wig Subscription</span>
       </a>
+      <a class="checkout-exit" href="services.html#plans">Back to plans</a>
     </div>
   </header>
 
-  <main class="checkout-main">
-    <div class="container checkout-container">
-      <p class="eyebrow">Demo checkout</p>
-      <h1>Your subscription</h1>
+  <main id="checkout-main" class="checkout-main">
+    <div class="checkout-wrap">
 
-      <!-- Phase 1 placeholder: the full five-step checkout is built in later phases. -->
+      <p class="checkout-demo-banner" role="note">
+        <strong>Demo only.</strong> No payment is collected and no real order is placed.
+      </p>
 
-      <!-- Shown when the URL has a valid plan -->
-      <section id="selected-plan" class="checkout-card" aria-labelledby="selected-plan-heading" hidden>
-        <p class="checkout-tag" id="selected-plan-type"></p>
-        <h2 id="selected-plan-heading"></h2>
-        <p class="checkout-price" id="selected-plan-price"></p>
-        <p id="selected-plan-summary"></p>
-        <ul class="plan-list" id="selected-plan-included"></ul>
-        <p><a href="checkout.html">Choose a different plan</a></p>
+      <!-- PROGRESS: five steps, each with a number and a text label -->
+      <nav aria-label="Checkout progress">
+        <ol class="progress" id="progress">
+          <li class="progress-step" data-step="1"><span class="progress-dot" aria-hidden="true">1</span><span class="progress-label">Plan</span></li>
+          <li class="progress-step" data-step="2"><span class="progress-dot" aria-hidden="true">2</span><span class="progress-label">Hair</span></li>
+          <li class="progress-step" data-step="3"><span class="progress-dot" aria-hidden="true">3</span><span class="progress-label">Your info</span></li>
+          <li class="progress-step" data-step="4"><span class="progress-dot" aria-hidden="true">4</span><span class="progress-label">Review</span></li>
+          <li class="progress-step" data-step="5"><span class="progress-dot" aria-hidden="true">5</span><span class="progress-label">Done</span></li>
+        </ol>
+      </nav>
+      <p class="progress-text" id="progress-text" aria-live="polite"></p>
+
+      <!-- SELECTED PLAN BAR: visible on every step once a plan is chosen -->
+      <div class="plan-bar" id="plan-bar" hidden>
+        <div>
+          <p class="plan-bar-label">Your plan</p>
+          <p class="plan-bar-name" id="plan-bar-name"></p>
+        </div>
+        <p class="plan-bar-price" id="plan-bar-price"></p>
+      </div>
+
+      <!-- STEP PANELS -->
+      <section class="step-panel" id="step-1" data-step="1" aria-labelledby="step-1-title">
+        <h1 class="step-title" id="step-1-title" tabindex="-1">Choose your subscription</h1>
+
+        <!-- Shown when the URL has a valid plan (Phase 3 turns this into the five plan cards) -->
+        <div class="card" id="selected-plan" hidden>
+          <p class="card-tag" id="selected-plan-type"></p>
+          <h2 class="card-title" id="selected-plan-heading"></h2>
+          <p class="card-price" id="selected-plan-price"></p>
+          <p id="selected-plan-summary"></p>
+          <ul class="check-list" id="selected-plan-included"></ul>
+          <p><a href="checkout.html">Choose a different plan</a></p>
+        </div>
+
+        <!-- Shown when the plan is missing or not recognised -->
+        <div class="card" id="plan-picker" hidden>
+          <h2 class="card-title">Choose a plan to get started</h2>
+          <p id="plan-picker-message"></p>
+          <ul class="picker-list" id="plan-picker-list"></ul>
+        </div>
       </section>
 
-      <!-- Shown when the plan is missing or not recognised -->
-      <section id="plan-picker" class="checkout-card" aria-labelledby="plan-picker-heading" hidden>
-        <h2 id="plan-picker-heading">Choose a plan to get started</h2>
-        <p id="plan-picker-message"></p>
-        <ul class="plan-picker-list" id="plan-picker-list"></ul>
+      <section class="step-panel" id="step-2" data-step="2" aria-labelledby="step-2-title" hidden>
+        <h1 class="step-title" id="step-2-title" tabindex="-1">Hair preferences</h1>
+        <div class="card"><p class="placeholder">Placeholder. Hair preference questions are built in Phase 4.</p></div>
       </section>
 
-      <p class="checkout-demo-note">This is a demonstration. No payment is collected.</p>
+      <section class="step-panel" id="step-3" data-step="3" aria-labelledby="step-3-title" hidden>
+        <h1 class="step-title" id="step-3-title" tabindex="-1">Your information</h1>
+        <div class="card"><p class="placeholder">Placeholder. Customer information fields are built in Phase 5.</p></div>
+      </section>
 
-      <noscript><p>Checkout needs JavaScript turned on. Please enable it and reload.</p></noscript>
+      <section class="step-panel" id="step-4" data-step="4" aria-labelledby="step-4-title" hidden>
+        <h1 class="step-title" id="step-4-title" tabindex="-1">Review your order</h1>
+        <div class="card"><p class="placeholder">Placeholder. The order review is built in Phase 6.</p></div>
+      </section>
+
+      <section class="step-panel" id="step-5" data-step="5" aria-labelledby="step-5-title" hidden>
+        <h1 class="step-title" id="step-5-title" tabindex="-1">Order confirmation</h1>
+        <div class="card"><p class="placeholder">Placeholder. The demo order confirmation is built in Phase 7.</p></div>
+      </section>
+
+      <!-- BACK / NEXT -->
+      <div class="step-actions" id="step-actions">
+        <button type="button" class="btn-secondary" id="back-button">Back</button>
+        <button type="button" class="btn-primary" id="next-button">Next</button>
+      </div>
+
+      <noscript><p class="card">Checkout needs JavaScript turned on. Please enable it and reload.</p></noscript>
     </div>
   </main>
+
+  <footer class="checkout-footer">
+    <div class="checkout-wrap">
+      <p>&copy; <span id="year">2026</span> She Blew My Money | Weave &amp; Wig Subscription. Demonstration checkout.</p>
+    </div>
+  </footer>
 
 </body>
 </html>
