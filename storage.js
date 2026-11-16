@@ -11,7 +11,7 @@
 
 const STORAGE_KEYS = {
   orders: "sheBlewMyMoney.demoOrders",
-  // Phase 8 adds: sheBlewMyMoney.checkoutDraft
+  draft: "sheBlewMyMoney.checkoutDraft", // answers typed so far, so a refresh doesn't lose them
 };
 
 // TODO: FUTURE PHASE — ADMIN DASHBOARD
@@ -53,4 +53,37 @@ function saveOrder(order) {
   } catch (err) {
     return false; // storage full or blocked
   }
+}
+
+// ---------- Checkout draft (in-progress answers) ----------
+// Saved while the customer fills in checkout and removed once the demo
+// order is placed. It holds only what the forms ask for: no payment
+// details and no passwords.
+
+// Saves the draft. Returns true if it was stored.
+function saveDraft(draft) {
+  try {
+    window.localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify(draft));
+    return true;
+  } catch (err) {
+    return false; // blocked or full: checkout still works, it just won't be remembered
+  }
+}
+
+// Returns the saved draft object, or null if none or unreadable.
+function loadDraft() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEYS.draft);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function clearDraft() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEYS.draft);
+  } catch (err) { /* nothing to clear if storage is blocked */ }
 }

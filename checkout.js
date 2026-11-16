@@ -1,5 +1,5 @@
 // ===========================================================
-// checkout.js (Phase 7: place the demo order)
+// checkout.js (Phase 8: drafts and recovery)
 // - Reads the plan ID from the URL (checkout.html?plan=luxury-wig)
 // - Shows one of five step panels at a time
 // - Back / Next move between steps and never auto-advance
@@ -28,7 +28,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const planFromUrl = getPlanById(new URLSearchParams(window.location.search).get("plan"));
   const hadPlanInUrl = new URLSearchParams(window.location.search).get("plan") !== null;
-  checkoutState.plan = planFromUrl;
+
+  // ---------- Draft: remember answers across a refresh ----------
+  // Answers are saved as the customer types (see saveDraftNow) and restored
+  // here. Anything unexpected in the saved draft is ignored, never trusted.
+  const clean = (value, max) => (typeof value === "string" ? value.slice(0, max) : "");
+  const isKnownOption = (list, value) => list.some((opt) => opt.value === value);
+
+  function restoreDraft() {
+    const draft = loadDraft();
+    const restored = { planId: null, step: 1 };
+    if (!draft) return restored;
+
+    if (typeof draft.planId === "string" && getPlanById(draft.planId)) restored.planId = draft.planId;
+    if (Number.isInteger(draft.step) && draft.step >= 1 && draft.step <= 4) restored.step = draft.step;
+
+    const prefs = draft.preferences && typeof draft.preferences === "object" ? draft.preferences : {};
+    if (isKnownOption(HAIR_OPTIONS.capSizes, prefs.capSize)) checkoutState.preferences.capSize = prefs.capSize;
+    if (isKnownOption(HAIR_OPTIONS.textures, prefs.texture)) checkoutState.preferences.texture = prefs.texture;
+    if (isKnownOption(HAIR_OPTIONS.colors, prefs.color)) checkoutState.preferences.color = prefs.color;
+    if (isKnownOption(HAIR_OPTIONS.styles, prefs.style)) checkoutState.preferences.style = prefs.style;
+    const len = Number(prefs.length);
+    if (Number.isInteger(len) && len >= HAIR_OPTIONS.lengths.min && len <= HAIR_OPTIONS.lengths.max) {
+      checkoutState.preferences.length = String(len);
+    }
+
+    const cust = draft.customer && typeof draft.customer === "object" ? draft.customer : {};
+    ["firstName", "lastName", "email", "phone", "street", "apartment", "city", "zip"].forEach((f) => {
+      checkoutState.customer[f] = clean(cust[f], 120);
+    });
+    if (US_STATES.some(([code]) => code === cust.state)) checkoutState.customer.state = cust.state;
+    checkoutState.customer.consentOrderEmail = cust.consentOrderEmail === true;
+    checkoutState.customer.consentMarketing = cust.consentMarketing === true;
+    return restored;
+  }
+
+  const restoredDraft = restoreDraft();
+  // A plan in the address bar wins over the draft. A bad plan in the address
+  // bar means "let the customer choose again", so the draft's plan is not used.
+  checkoutState.plan = planFromUrl || (hadPlanInUrl ? null : getPlanById(restoredDraft.planId));
+  let draftReady = false; // set to true once the page has finished loading
+  let orderPlaced = false; // blocks a second order after one succeeded
+
+  function saveDraftNow() {
+    // Never save an empty first load, or anything after the order is placed
+    if (!draftReady || orderPlaced || checkoutState.step === TOTAL_STEPS) return;
+    saveDraft({
+      savedAt: new Date().toISOString(),
+      planId: checkoutState.plan ? checkoutState.plan.id : null,
+      step: checkoutState.step,
+      preferences: checkoutState.preferences,
+      customer: checkoutState.customer,
+    });
+  }
 
   const panels = document.querySelectorAll(".step-panel");
   const progressSteps = document.querySelectorAll(".progress-step");
@@ -546,7 +598,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Steps 4 and 5: place the demo order ----------
   const orderError = document.getElementById("order-error");
   let orderInProgress = false; // blocks double clicks while an order is being made
-  let orderPlaced = false;     // blocks a second order after one succeeded
 
   // A short, unique demo ID such as SBM-DEMO-LZ3K9A-7QF2
   function generateOrderId() {
@@ -633,6 +684,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       orderPlaced = true;
+      clearDraft(); // the draft is finished with, so remove it
 
       // TODO: FUTURE PHASE — EMAIL INTEGRATION
       // Integrate an approved email service (e.g. EmailJS).
@@ -717,6 +769,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (step === TOTAL_STEPS) backButton.hidden = true;
 
     renderProgress();
+    saveDraftNow();
 
     if (moveFocus) {
       // Move focus to the step heading so keyboard and screen reader users know the step changed
@@ -760,6 +813,24 @@ document.addEventListener("DOMContentLoaded", () => {
       planNotice.textContent = "We couldn't find that demo order in this browser. You can start a new one below.";
       planNotice.hidden = false;
     }
-    showStep(1, false);
+    // Return to the step the customer was on, but only for the same plan
+    const sameDraftPlan = checkoutState.plan && restoredDraft.planId === checkoutState.plan.id;
+    showStep(sameDraftPlan ? restoredDraft.step : 1, false);
   }
+
+  // Save the draft after any typing or choosing (these run after the
+  // fields' own handlers have updated checkoutState)
+  document.addEventListener("input", saveDraftNow);
+  document.addEventListener("change", saveDraftNow);
+
+  // "Clear saved answers" gives the customer a clean start
+  const clearButton = document.getElementById("clear-draft-button");
+  if (clearButton) {
+    clearButton.addEventListener("click", () => {
+      draftReady = false; // stop anything saving again
+      clearDraft();
+      window.location.href = "checkout.html";
+    });
+  }
+  draftReady = true;
 });

@@ -329,3 +329,6 @@ textarea:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+.storage-note { max-width: 560px; margin: 0 auto 12px !important; }
+.checkout-footer .link-button { display: block; margin: 4px auto 0; font-size: 0.95rem; }
