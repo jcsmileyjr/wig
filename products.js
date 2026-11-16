@@ -102,6 +102,39 @@ const GLOSSARY = {
   frontal: "A frontal is a larger piece of lace that runs ear to ear across the front hairline, for a natural hairline and flexible parting.",
 };
 
+// Hair preference options shown on checkout step 2.
+// TODO: CONFIRM WITH THE BUSINESS OWNER. These values come from the
+// planning notes (form_planning.md) and the cap-size chart on
+// services.html. They are NOT a verified inventory list, so checkout
+// must never present them as guaranteed stock.
+const HAIR_OPTIONS = {
+  capSizes: [
+    { value: "petite-small", label: "Petite / Small", hint: "21 \u2013 21.5\u2033" },
+    { value: "medium", label: "Medium", hint: "22 \u2013 22.5\u2033, the most common size" },
+    { value: "large", label: "Large", hint: "23 \u2013 23.5\u2033" },
+    { value: "extra-large", label: "Extra Large", hint: "24\u2033 and up" },
+    { value: "not-sure", label: "Not Sure", hint: "Choose this if you haven't measured yet" },
+  ],
+  textures: [
+    { value: "straight", label: "Straight", hint: "Sleek, with no curl" },
+    { value: "body-wave", label: "Body Wave", hint: "Soft, loose waves" },
+    { value: "deep-wave", label: "Deep Wave", hint: "Fuller, more defined waves" },
+    { value: "curly", label: "Curly", hint: "Defined curls" },
+  ],
+  lengths: { min: 10, max: 24 }, // inches
+  colors: [
+    { value: "natural-black", label: "Natural Black" },
+    { value: "1b", label: "1B", hint: "A soft black with a hint of brown" },
+    { value: "brown", label: "Brown" },
+    { value: "other", label: "Other" },
+  ],
+  styles: [ // wig plans only, optional
+    { value: "everyday", label: "Everyday" },
+    { value: "glamorous", label: "Glamorous" },
+    { value: "professional", label: "Professional" },
+  ],
+};
+
 // Returns the plan with this ID, or null when the ID is missing or unknown.
 function getPlanById(id) {
   if (typeof id !== "string") return null;
