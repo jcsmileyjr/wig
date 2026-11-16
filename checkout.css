@@ -1,0 +1,21 @@
+/* ==========================================================
+   checkout.css (Phase 1 basics; the full checkout visual
+   system is added in Phase 2)
+   ========================================================== */
+.checkout-main { padding: 40px 0 64px; }
+.checkout-container { max-width: 680px; }
+
+.checkout-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  margin: 20px 0;
+}
+.checkout-tag { margin: 0 0 4px; color: var(--muted); font-size: 0.95rem; }
+.checkout-price { font-size: 1.6rem; font-weight: 700; margin: 4px 0 12px; }
+.checkout-card .plan-list,
+.plan-picker-list { padding-left: 20px; }
+.plan-picker-list li { margin: 8px 0; }
+.checkout-demo-note { color: var(--muted); font-size: 0.95rem; }
