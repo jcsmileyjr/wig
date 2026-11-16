@@ -1,5 +1,5 @@
 // ===========================================================
-// checkout.js (Phase 5: customer information)
+// checkout.js (Phase 6: review order)
 // - Reads the plan ID from the URL (checkout.html?plan=luxury-wig)
 // - Shows one of five step panels at a time
 // - Back / Next move between steps and never auto-advance
@@ -425,6 +425,96 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
+  // ---------- Step 4: review ----------
+  // Built fresh from checkoutState every time the customer arrives, so it
+  // always shows the latest answers. Text is added with textContent only.
+  const reviewContent = document.getElementById("review-content");
+
+  // Turns a stored value like "body-wave" into its label, "Body Wave"
+  function optionLabel(list, value) {
+    const match = list.find((opt) => opt.value === value);
+    return match ? match.label : value;
+  }
+
+  function makeReviewSection(title, editStep, rows) {
+    const section = document.createElement("section");
+    section.className = "card review-section";
+
+    const head = document.createElement("div");
+    head.className = "review-head";
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "link-button";
+    edit.textContent = "Edit";
+    edit.setAttribute("aria-label", "Edit " + title.toLowerCase());
+    edit.addEventListener("click", () => showStep(editStep, true));
+    head.append(heading, edit);
+
+    const list = document.createElement("dl");
+    list.className = "review-list";
+    rows.forEach(([label, value]) => {
+      if (!value) return;
+      const dt = document.createElement("dt");
+      dt.textContent = label;
+      const dd = document.createElement("dd");
+      dd.textContent = value;
+      list.append(dt, dd);
+    });
+
+    section.append(head, list);
+    return section;
+  }
+
+  function renderReview() {
+    const plan = checkoutState.plan;
+    const prefs = checkoutState.preferences;
+    const c = checkoutState.customer;
+    reviewContent.textContent = "";
+    if (!plan) return;
+
+    reviewContent.appendChild(makeReviewSection("Subscription", 1, [
+      ["Plan", plan.name],
+      ["Type", (plan.category === "wig" ? "Wig" : "Weave") + " \u00b7 " + plan.hairType],
+      ["Price", formatPlanPrice(plan)],
+    ]));
+
+    reviewContent.appendChild(makeReviewSection("Hair preferences", 2, [
+      ["Cap size", prefs.capSize ? optionLabel(HAIR_OPTIONS.capSizes, prefs.capSize) : ""],
+      ["Texture", optionLabel(HAIR_OPTIONS.textures, prefs.texture)],
+      ["Length", prefs.length ? prefs.length + " inches" : ""],
+      ["Color", optionLabel(HAIR_OPTIONS.colors, prefs.color)],
+      ["Style", prefs.style ? optionLabel(HAIR_OPTIONS.styles, prefs.style) : ""],
+    ]));
+
+    const cityLine = c.city.trim() + ", " + c.state + " " + c.zip.trim();
+    reviewContent.appendChild(makeReviewSection("Your information", 3, [
+      ["Name", c.firstName.trim() + " " + c.lastName.trim()],
+      ["Email", c.email.trim()],
+      ["Phone", c.phone.trim()],
+      ["Ship to", [c.street.trim(), c.apartment.trim(), cityLine].filter(Boolean).join(", ")],
+      ["Order emails", c.consentOrderEmail ? "Yes" : "No"],
+      ["Marketing emails", c.consentMarketing ? "Yes" : "No"],
+    ]));
+
+    // TODO: BUSINESS DECISION NEEDED. Shipping charges, taxes, return terms,
+    // fees and cancellation rules have not been confirmed, so none are shown.
+    const summary = document.createElement("section");
+    summary.className = "card review-total";
+    const label = document.createElement("p");
+    label.className = "review-total-label";
+    label.textContent = "Subscription price";
+    const amount = document.createElement("p");
+    amount.className = "review-total-amount";
+    amount.textContent = formatPlanPrice(plan);
+    const note = document.createElement("p");
+    note.className = "review-total-note";
+    note.textContent = "Shipping, tax and other charges are not set up in this demo. No payment is collected.";
+    summary.append(label, amount, note);
+    reviewContent.appendChild(summary);
+  }
+
   // ---------- Progress indicator ----------
   function renderProgress() {
     progressSteps.forEach((li) => {
@@ -450,6 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (step === 2) renderPreferences();
+    if (step === 4) renderReview();
 
     backButton.hidden = step === 1;
     // The final step is the end of the flow; later phases add the order button on step 4.
